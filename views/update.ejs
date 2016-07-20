@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Update User</title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <body>
+    <%x= JSON.parse(book) %>
+    <strong>Please fill new details:</strong> </br> </br>
+
+    <form action="/update_book/update" method="post">
+      <input type="hidden" name="key" value="<%=key%>">
+    	<strong>Book Title:</strong><input readonly="true" type="text" name="name" value="<%=x.name%>" style="LEFT: 200px; POSITION:  
+        absolute"/> </br> </br>
+      <strong>Book Description:</strong><input type="text" name="description" value="<%=x.description%>"  
+        style="LEFT: 200px; POSITION: absolute"/> </br> </br>
+    	<input type="submit" value="Update" />
+    </form>
+    
+  </body>
+</html>

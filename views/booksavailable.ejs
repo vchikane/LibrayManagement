@@ -1,0 +1,9 @@
+<% for(i in books) { %>
+	<%x= JSON.parse(books[i]) %>
+	<%= x.name %>
+	<%= " --> " %>
+	<%= x.description %>
+	<a href="/checkout/out?u_id=<%=i%>&name=<%=x.name%>&desc=<%=x.description%>" >Checkout
+	</a>
+	</br>
+<% } %>

@@ -1,0 +1,10 @@
+<% for(i in books) { %>
+	<%x= JSON.parse(books[i]) %>
+	<%= x.name%>
+	<%= " --> "%>
+	<%= x.description%>
+	<a href="/update_book?u_id=<%=i%>" >Update</a>
+	<a href="/delete_book?u_id=<%=i%>" >Delete</a>
+	</br>
+	</br>
+<% } %>
