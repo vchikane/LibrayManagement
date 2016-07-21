@@ -129,15 +129,7 @@ router.get('/checkout/out', function(req, res) {
 	console.log("key is " + key_1);
 	mq_conn.publish_msg('books_checkout',key_1);
 	console.log("data pushed to queue");
-	obj = {
-		'name'        : req.query.name, 
-		'description' : req.query.desc,
-		'checkout'    : 'true'
-	}
-	console.log("value of obj " + obj);
-	client.hmset('books', key_1, JSON.stringify(obj), function(err, doc) {
-		res.send("Congratulation, you can enjoy the book for 21 days!");
-	})
+	res.send("Congratulation, you can enjoy the book for 21 days!");
 });
 
 
@@ -169,15 +161,7 @@ router.get('/checkin/in', function(req, res) {
 	console.log("key is " + key_1);
 	mq_conn.publish_msg('books_checkin',key_1);
 	console.log("data pushed to checkin queue");
-	obj = {
-		'name'        : req.query.name, 
-		'description' : req.query.desc,
-		'checkout'    : 'false'
-	}
-	console.log("value of obj " + obj);
-	client.hmset('books', key_1, JSON.stringify(obj), function(err, doc) {
-		res.send("Thank you for using the E-Library!");
-	})
+	res.send("Thank you for using the E-Library!");
 });
 
 module.exports = router;
