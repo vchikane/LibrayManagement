@@ -8,69 +8,12 @@ var bodyParser = require('body-parser');
 var routes = require('./routes/index');
 var users = require('./routes/users');
 
-// adding to get singleton connection of redis
-var client = require('./redis_lib/redis_connection.js'); 
-
-/* start consumer, which can listen the msgs written by producer for checkout books*/
-var amqp = require('amqplib/callback_api');
-amqp.connect('amqp://localhost', function(err, conn) {
-  conn.createChannel(function(err, ch) {
-    if(err) {
-      console.log(err);
-    }
-    q_01 = "books_checkout";
-    ch.assertQueue(q_01, {durable: false});
-    console.log("checkout queue created");
-    ch.consume(q_01, function(msg) {
-      key_1 = msg.content.toString();
-      client.hget('books', key_1, function(err, resp) {
-        if(resp !== null) {
-          console.log("response using consumed key" + resp);
-          jsonData = JSON.parse(resp);
-          obj = {
-            'name'        : jsonData.name, 
-            'description' : jsonData.description,
-            'checkout'    : 'true'
-          }
-          client.hmset('books', key_1, JSON.stringify(obj), function(err, doc) {
-            console.log("Book Locked");
-          })
-        }
-      });
-    });
-  });
-});
-
-
-/* start consumer, which can listen the msgs written by producer for checkin books*/
-var amqp = require('amqplib/callback_api');
-amqp.connect('amqp://localhost', function(err, conn) {
-  conn.createChannel(function(err, ch) {
-    if(err) {
-      console.log(err);
-    }
-    q_02 = "books_checkin";
-    ch.assertQueue(q_02, {durable: false});
-    console.log("checkin queue created");
-    ch.consume(q_02, function(msg) {
-      key_1 = msg.content.toString();
-      client.hget('books', key_1, function(err, resp) {
-        if(resp !== null) {
-          console.log("response using consumed key" + resp);
-          jsonData = JSON.parse(resp);
-          obj = {
-            'name'        : jsonData.name, 
-            'description' : jsonData.description,
-            'checkout'    : 'false'
-          }
-          client.hmset('books', key_1, JSON.stringify(obj), function(err, doc) {
-            console.log("Book Unlocked");
-          })
-        }
-      });
-    });
-  });
-});
+//requiring rabbitmq library to start consumers
+var consumers = require('./rabbitmq_lib/rabbitmq_consumers.js');
+//this fuucntion will start checkout queue consumer
+consumers.startCheckoutConsumer();
+//this function will start checkin quque consumer
+consumers.startCheckinConsumer();
 
 
 var app = express();

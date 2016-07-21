@@ -162,7 +162,6 @@ router.get('/checkin/in', function(req, res) {
 	mq_conn.publish_msg('books_checkin',key_1);
 	console.log("data pushed to checkin queue");
 	res.render('checkedin');
-	res.send("Thank you for using the E-Library!");
 });
 
 module.exports = router;
