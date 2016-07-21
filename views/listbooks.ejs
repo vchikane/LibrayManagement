@@ -1,3 +1,7 @@
+<%= "List of books in library" %>
+</br>
+</br>
+
 <% for(i in books) { %>
 	<%x= JSON.parse(books[i]) %>
 	<%= x.name%>
@@ -8,3 +12,8 @@
 	</br>
 	</br>
 <% } %>
+
+</br>
+</br>
+
+<a href="/">Home</a>

@@ -35,7 +35,7 @@ router.post('/addbook/insert', function(req, res) {
 
 	//calling redis method to store data
 	client.hmset('books', key_1, JSON.stringify(obj), function(err,doc) {
-		res.send('Book Added Successfully');
+		res.render('inserted');
 	});
 
 });
@@ -75,7 +75,7 @@ router.post('/update_book/update', function(req, res) {
 	console.log("type of obj " + typeof(obj));
 	console.log("value of obj " + obj);
 	client.hmset('books', key_1, JSON.stringify(obj), function(err, doc) {
-		res.send("Book Detais Updated successfully");
+		res.render('updated');
 	})
 	
 });
@@ -98,7 +98,7 @@ router.post('/delete_book/delete', function(req, res) {
 	key_1 = req.body.key;
 	console.log(key_1);
 	client.hdel('books', key_1, function() {
-		res.send("Book Deleted successfully");
+		res.render('deleted');
 	})
 });
 
@@ -129,7 +129,7 @@ router.get('/checkout/out', function(req, res) {
 	console.log("key is " + key_1);
 	mq_conn.publish_msg('books_checkout',key_1);
 	console.log("data pushed to queue");
-	res.send("Congratulation, you can enjoy the book for 21 days!");
+	res.render('checkedout');
 });
 
 
@@ -161,6 +161,7 @@ router.get('/checkin/in', function(req, res) {
 	console.log("key is " + key_1);
 	mq_conn.publish_msg('books_checkin',key_1);
 	console.log("data pushed to checkin queue");
+	res.render('checkedin');
 	res.send("Thank you for using the E-Library!");
 });
 
