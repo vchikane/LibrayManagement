@@ -106,12 +106,24 @@ router.post('/delete_book/delete', function(req, res) {
 router.get('/checkout', function(req, res) {
 	client.hgetall("books", function(err, resp) {
 		console.log(resp);
-		res.render('booksavailable', {
+		for( i in resp) {
+			console.log(JSON.parse(resp[i]));
+			var book=JSON.parse(resp[i])
+			if(book.checkout!=='false'){
+				delete resp[i]
+			}
+		}
+		if(Object.getOwnPropertyNames(resp).length === 0) {
+			res.send("Sorry! No books are available, Please try later.");
+		} else {
+			res.render('booksavailable', {
 			books: resp
-		})
+		  })
+		}
 	})
 });
 
+/* push the key into queue and consumer will consume it, also book will be locked in redis*/
 router.get('/checkout/out', function(req, res) {
 	key_1 = req.query.u_id;
 	console.log("key is " + key_1);
@@ -131,7 +143,41 @@ router.get('/checkout/out', function(req, res) {
 
 /* checkin the books */
 router.get('/checkin', function(req, res) {
-	res.render('checkin');
+	client.hgetall("books", function(err, resp) {
+		for( i in resp) {
+			console.log(JSON.parse(resp[i]));
+			var book=JSON.parse(resp[i])
+			if(book.checkout==='false'){
+				delete resp[i]
+			}
+		}
+		console.log(resp);
+		if(Object.getOwnPropertyNames(resp).length === 0) {
+			res.send("No books to return");
+		} else {
+			res.render('bookslocked', {
+			books: resp
+		  })
+		}
+		
+	})
+});
+
+/* push the key into queue and consumer will consume it, also book will be locked in redis*/
+router.get('/checkin/in', function(req, res) {
+	key_1 = req.query.u_id;
+	console.log("key is " + key_1);
+	mq_conn.publish_msg('books_checkin',key_1);
+	console.log("data pushed to checkin queue");
+	obj = {
+		'name'        : req.query.name, 
+		'description' : req.query.desc,
+		'checkout'    : 'false'
+	}
+	console.log("value of obj " + obj);
+	client.hmset('books', key_1, JSON.stringify(obj), function(err, doc) {
+		res.send("Thank you for using the E-Library!");
+	})
 });
 
 module.exports = router;

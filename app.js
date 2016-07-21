@@ -8,17 +8,34 @@ var bodyParser = require('body-parser');
 var routes = require('./routes/index');
 var users = require('./routes/users');
 
-/* added code to start consumer, which can listen the msgs written by producer */
+/* start consumer, which can listen the msgs written by producer for checkout books*/
 var amqp = require('amqplib/callback_api');
 amqp.connect('amqp://localhost', function(err, conn) {
   conn.createChannel(function(err, ch) {
     if(err) {
       console.log(err);
     }
-    q = "books_checkout";
-    ch.assertQueue(q, {durable: false});
-    console.log("queue created");
-    ch.consume(q, function(msg) {
+    q_01 = "books_checkout";
+    ch.assertQueue(q_01, {durable: false});
+    console.log("checkout queue created");
+    ch.consume(q_01, function(msg) {
+      console.log("message consumed " + msg.content.toString());
+    });
+  });
+});
+
+
+/* start consumer, which can listen the msgs written by producer for checkin books*/
+var amqp = require('amqplib/callback_api');
+amqp.connect('amqp://localhost', function(err, conn) {
+  conn.createChannel(function(err, ch) {
+    if(err) {
+      console.log(err);
+    }
+    q_02 = "books_checkin";
+    ch.assertQueue(q_02, {durable: false});
+    console.log("checkin queue created");
+    ch.consume(q_02, function(msg) {
       console.log("message consumed " + msg.content.toString());
     });
   });
