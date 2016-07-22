@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-
+var redis_insert= require('./redis_insert.js')
 // adding to get singleton connection of redis
 var client = require('../redis_lib/redis_connection.js'); 
 console.log("redis connection successfull");
@@ -23,20 +23,7 @@ router.get('/addBook', function(req, res) {
 /* Insert record into redis hash */
 router.post('/addbook/insert', function(req, res) {
 	//generating unique key using currect time
-	var date =  Math.floor(Date.now()/1000);
-	var key_1 = 'ISBN_' + date;
-	console.log(key_1);
-
-	obj = {
-		'name'        : req.body.name, 
-		'description' : req.body.description,
-		'checkout'    : 'false'
-	};
-
-	//calling redis method to store data
-	client.hmset('books', key_1, JSON.stringify(obj), function(err,doc) {
-		res.render('inserted');
-	});
+	redis_insert(req,res)
 
 });
 
